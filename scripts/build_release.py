@@ -17,7 +17,7 @@ from paperflow import __version__
 SOURCE_FILES = [".gitignore", ".gitattributes", "LICENSE", "README.md", "CHANGELOG.md",
     "THIRD_PARTY_NOTICES.md", "environment.yml", "requirements.txt", "requirements-ocr.txt",
     "requirements-build.txt", "constraints.txt", "run.bat", "PDFParallelTrans.spec", "release-resources.json",
-    "docs/ROADMAP.md", "docs/RELEASING.md", "scripts/build_release.py", "scripts/frozen_entry.py",
+    "docs/ROADMAP.md", "docs/RELEASING.md", "docs/HANDOFF.md", "scripts/build_release.py", "scripts/frozen_entry.py",
     "scripts/build_layout_demo.py", "scripts/smoke_release.py"]
 
 
@@ -100,7 +100,7 @@ def main():
         for name in ("README.md", "LICENSE", "THIRD_PARTY_NOTICES.md", "CHANGELOG.md"):
             shutil.copy2(ROOT / name, bundle / name)
         (bundle / "docs").mkdir(exist_ok=True)
-        for name in ("RELEASING.md", "ROADMAP.md"):
+        for name in ("RELEASING.md", "ROADMAP.md", "HANDOFF.md"):
             shutil.copy2(ROOT / "docs" / name, bundle / "docs" / name)
         archive = output / f"PDFParallelTrans-{__version__}-windows-x64.zip"
         with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as z:

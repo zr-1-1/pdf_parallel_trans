@@ -86,7 +86,7 @@ $env:PAPERFLOW_DATA_DIR = 'D:\MyPDFTasks'
 conda run -n pdf_parallel_trans python -X utf8 -m unittest discover -s tests -v
 ```
 
-Windows 构建、发布文件与验收步骤见 [发布说明](docs/RELEASING.md)，功能变更见 [CHANGELOG](CHANGELOG.md)，后续方向见 [ROADMAP](docs/ROADMAP.md)。
+换机器继续开发请先看 [新机器交接文档](docs/HANDOFF.md)。Windows 构建、发布文件与验收步骤见 [发布说明](docs/RELEASING.md)，功能变更见 [CHANGELOG](CHANGELOG.md)，后续方向见 [ROADMAP](docs/ROADMAP.md)。
 
 ## 许可证与来源
 
