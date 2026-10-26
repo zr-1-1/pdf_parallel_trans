@@ -1,0 +1,2 @@
+# pdf_parallel_trans
+旨在实现类沉浸式翻译PDF Pro文档翻译那样一段原文一段译文的PDF翻译模式，目前输出格式仅PDF版
