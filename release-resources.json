@@ -1,0 +1,22 @@
+{
+  "fonts/NotoSansCJKsc-Regular.otf": {
+    "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/f8d157532fbfaeda587e826d4cd5b21a49186f7c/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf",
+    "sha256": "2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b"
+  },
+  "fonts/OFL.txt": {
+    "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/f8d157532fbfaeda587e826d4cd5b21a49186f7c/Sans/LICENSE",
+    "sha256": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2"
+  },
+  "pymupdf-1.25.2.tar.gz": {
+    "url": "https://files.pythonhosted.org/packages/40/fc/dd8776dc5c2f8cf0e51cf81a5f1de3840996bed7ca03ec768b0733024fb9/pymupdf-1.25.2.tar.gz",
+    "sha256": "9ea88ff1b3ccb359620f106a6fd5ba6877d959d21d78272052c3496ceede6eec"
+  },
+  "geos-3.13.1.tar.bz2": {
+    "url": "https://download.osgeo.org/geos/geos-3.13.1.tar.bz2",
+    "sha256": "df2c50503295f325e7c8d7b783aca8ba4773919cde984193850cf9e361dfd28c"
+  },
+  "mupdf-1.25.2-source.tar.gz": {
+    "url": "https://mupdf.com/downloads/archive/mupdf-1.25.2-source.tar.gz",
+    "sha256": "36ccf6a5e691e188acf8db6e98d08bf05f27bb4ce30432dc15fc76d329a92d4d"
+  }
+}

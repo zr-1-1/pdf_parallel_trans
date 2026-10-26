@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PaperFlow · 论文逐段对照</title><link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <a href="/" class="brand" aria-label="PaperFlow 首页"><span class="brand-icon">P<span>f</span></span><strong>PaperFlow</strong><span class="brand-sub">论文逐段对照</span></a>
+  <span class="local"><i></i> 本机工作空间</span>
+</header>
+<main>
+  <div class="intro"><div><p class="eyebrow">READ IN TWO LANGUAGES</p><h1>原文与译文，逐段相伴。</h1><p class="intro-copy">保留论文的公式与图表，在每段英文之后，读到中文。</p></div><span class="format-badge">EN<br><span>中文</span></span></div>
+  <div class="workspace">
+    <aside class="controls">
+      <form id="translate-form">
+        <section class="card upload-card">
+          <h2><span class="step">01</span> 选择论文</h2>
+          <label class="dropzone" id="dropzone" for="file">
+            <svg width="34" height="38" viewBox="0 0 34 38" aria-hidden="true"><path d="M7 2h14l8 8v25H7zM21 2v9h8M12 20h12M12 26h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            <strong id="file-label">拖入 PDF，或点击选择</strong><span id="file-detail">正在读取上传限制…</span>
+            <input id="file" name="file" type="file" accept="application/pdf,.pdf" required>
+          </label>
+          <div class="split-fields"><label>翻译页码<input name="pages" placeholder="全部页，或 1-5,8" autocomplete="off"></label><label>译文字号<select name="fontsize"><option value="9">9 pt · 紧凑</option><option value="10.5" selected>10.5 pt · 标准</option><option value="12">12 pt · 大字</option></select></label></div>
+          <div class="split-fields"><label>原文分栏<select id="columns" name="columns"><option value="auto">自动识别</option><option value="single">单栏</option><option value="double">双栏 · 先左后右</option></select></label><label>扫描件 OCR<select id="ocr" name="ocr"><option value="auto">自动 · 仅扫描页</option><option value="off">关闭</option><option value="force">强制 · 重建文字层</option></select></label></div>
+          <label class="checkbox-field"><input type="checkbox" id="protect-formulas" checked> 保护行内公式（保留原始字形）</label>
+          <p class="field-note">双栏按阅读顺序展开，跨栏图表整体保留。OCR 在本机运行；低清或手写内容需人工核对。参考文献保留原文。</p>
+          <p id="parsing-capabilities" class="field-note" role="status"></p>
+        </section>
+        <section class="card engine-card">
+          <h2><span class="step">02</span> 翻译连接<span id="engine-state" class="state">检测中</span></h2>
+          <div class="engine-tabs" role="group" aria-label="翻译连接方式">
+            <button type="button" class="active" data-provider="codex" aria-pressed="true">本地 Codex</button>
+            <button type="button" data-provider="deepseek" aria-pressed="false">DeepSeek</button>
+            <button type="button" data-provider="api" aria-pressed="false">兼容 API</button>
+          </div>
+          <p id="provider-note" class="provider-note">使用本机 Codex CLI 的登录状态与配置，无需在此填写密钥。</p>
+          <div id="api-fields" hidden>
+            <label>API Base URL<input id="base-url" type="url" placeholder="https://api.deepseek.com" autocomplete="off"></label>
+            <label>API Key<input id="api-key" type="password" placeholder="仅用于本次连接，不保存" autocomplete="off" spellcheck="false"></label>
+          </div>
+          <label id="codex-model-field">Codex 模型<select id="codex-model"><option value="">沿用本机配置</option><option value="__custom__">自定义模型…</option></select></label>
+          <label id="model-field" hidden><span id="model-label">自定义模型名称</span><input id="model" placeholder="填写完整模型名称" autocomplete="off" spellcheck="false" maxlength="120"></label>
+          <div id="codex-options">
+            <label>推理强度<select id="reasoning-effort" aria-describedby="effort-note"><option value="">沿用 CLI 配置</option></select></label>
+            <p id="effort-note" class="field-note">更高强度通常耗时更长，不保证译文更好。</p>
+            <div class="catalog-row"><button type="button" class="text-button" id="refresh-models">刷新模型列表</button><span>不发送翻译请求</span></div>
+            <p id="catalog-status" class="field-note" role="status">正在读取本机 Codex 模型…</p>
+          </div>
+          <div class="connection-row"><button type="button" class="text-button" id="check">测试连接 <span>↗</span></button><span>发送一句测试文本</span></div>
+          <p id="connection-result" class="connection-result" role="status" hidden></p>
+          <p class="privacy-note">论文文本将发送给所选模型服务；本地 Codex 也需要联网。</p>
+          <details class="translation-preferences"><summary>术语与文档背景（可选）</summary>
+            <label for="glossary">术语表<textarea id="glossary" name="glossary" rows="4" maxlength="12000" placeholder="每行一项，例如：&#10;track = 轨迹&#10;data association = 数据关联"></textarea></label>
+            <label for="context">文档背景<textarea id="context" name="context" rows="3" maxlength="4000" placeholder="例如：空间目标监测论文，轨迹关联章节。"></textarea></label>
+            <p class="field-note">这两项保存在此浏览器，并随论文文本发送给所选模型。续译沿用任务创建时的内容。API Key 不会保存。</p>
+          </details>
+        </section>
+        <button class="secondary" id="preflight" type="submit" formnovalidate>先预检原文 · 不调用翻译</button>
+        <button class="primary" id="submit" type="submit">生成中英对照 PDF <span>→</span></button>
+        <p id="form-error" class="error" role="alert" hidden></p>
+      </form>
+      <section class="history-section"><div class="section-line"><h2>最近任务</h2><span>保存在本机</span></div><div id="history"><p class="empty-history">完成的论文会显示在这里。</p></div></section>
+    </aside>
+    <section class="preview-panel" aria-label="论文预览">
+      <div class="preview-toolbar"><div><span class="preview-dot"></span><strong id="preview-title">格式参考</strong><span id="preview-tag">中英逐段对照</span></div><div class="preview-actions"><button id="edit-translation" class="text-button" type="button" hidden>校订译文</button><a id="download" class="download" href="/api/sample?download=true" hidden>下载 PDF ↓</a></div></div>
+      <div id="progress-panel" class="progress-panel" hidden><div class="progress-heading"><strong id="progress-message">准备中…</strong><div class="progress-actions"><button id="resume" type="button" class="text-button" hidden>继续此任务</button><button id="cancel" type="button" class="text-button">取消任务</button></div></div><progress id="progress" max="100" value="0"></progress><p id="progress-detail"></p><p id="analysis-detail"></p><p id="analysis-warnings" class="error" hidden></p><p id="error-hint" class="error" hidden></p></div>
+      <section id="preflight-panel" class="editor" aria-label="翻译前预检" hidden>
+        <div class="section-line"><h2>翻译前预检</h2><span class="field-note">在本机解析，无翻译调用</span></div>
+        <p id="preflight-summary" class="field-note"></p>
+        <label for="preflight-page">核对原文页<select id="preflight-page"></select></label>
+        <div class="preflight-columns"><img id="source-preview" alt="所选原文页面"><div><p id="preflight-page-info" class="field-note"></p><ol id="preflight-text" aria-label="识别出的段落阅读顺序"></ol></div></div>
+        <p class="field-note">按右侧段落顺序核对原图；公式标记代表将保留的原文公式。若识别不正确，请调整左侧分栏或 OCR 后重新预检。</p>
+        <div class="editor-actions"><button id="trial-start" class="secondary" type="button">试译这一页</button><button id="full-start" class="primary" type="button">翻译全部选定页</button></div>
+        <p id="preflight-settings" class="field-note">开始翻译时使用左侧连接、术语和背景设置。</p>
+      </section>
+      <section id="editor" class="editor" aria-label="译文校订" hidden>
+        <div class="section-line"><h2>逐段校订</h2><div><button id="reload-editor" class="text-button" type="button">重新加载草稿</button> <button id="close-editor" class="text-button" type="button">收起</button></div></div>
+        <p class="field-note">修改译文后重新排版，无需再次调用模型。公式标记必须完整保留。</p>
+        <label for="editor-search">查找原文或译文<input id="editor-search" type="search" placeholder="输入关键词定位段落" autocomplete="off"></label>
+        <div class="editor-navigation"><button id="previous-paragraph" type="button" aria-label="上一段">←</button><label class="visually-hidden" for="editor-paragraph">选择段落</label><select id="editor-paragraph"></select><button id="next-paragraph" type="button" aria-label="下一段">→</button></div>
+        <p id="editor-count" class="field-note" aria-live="polite"></p>
+        <div id="editor-content"><h3>原文</h3><p id="editor-source" class="editor-source"></p><label for="editor-translation">中文译文<textarea id="editor-translation" rows="7" spellcheck="false"></textarea></label><p id="editor-formulas" class="field-note"></p></div>
+        <div class="editor-actions"><label>译文字号<select id="editor-font-size"><option value="9">9 pt · 紧凑</option><option value="10.5">10.5 pt · 标准</option><option value="12">12 pt · 大字</option></select></label><button id="save-export" class="primary" type="button">保存并重新导出</button><button id="restore-translation" class="text-button" type="button">恢复机器译文</button></div>
+        <p id="editor-status" class="field-note" role="status"></p><button id="restore-local-draft" class="text-button" type="button" hidden>恢复浏览器保留的草稿</button><p id="editor-error" class="error" role="alert" hidden></p>
+      </section>
+      <div class="page-navigation" id="page-navigation" hidden><div><button id="previous-page" type="button" aria-label="上一页">←</button><span id="page-counter" aria-live="polite"></span><button id="next-page" type="button" aria-label="下一页">→</button></div><a id="open-pdf" target="_blank" rel="noopener">在新标签页打开 PDF ↗</a></div>
+      <div class="paper-area" id="paper-area">
+        <img id="pdf-preview" alt="中英逐段对照 PDF 页面预览" hidden>
+        <div id="empty-preview" class="paper">
+          <p class="paper-kicker">A BILINGUAL READING EXPERIENCE</p><h3>Data association &amp;<br>uncertainty pruning</h3>
+          <div class="paper-meta">原文保留 · 译文相随 · 公式清晰</div>
+          <p class="original">Data association is essential for maintaining a catalogue of resident space objects. Multiple observations reduce the uncertainty of an estimated orbit.</p>
+          <p class="translated">数据关联对于维护在轨空间目标目录至关重要。多次观测可以降低估计轨道的不确定性。</p>
+          <h4>2 Relevant background</h4><p class="translated short">2 相关背景</p>
+          <p class="original">The original equations and figures remain in place. Each translated paragraph follows its source, making it easier to read and compare.</p>
+          <div class="equation">x₀ = V x̃₀</div>
+          <p class="translated">保留原文中的公式与图表，中文译文紧跟对应英文段落，便于连续阅读与对照。</p>
+          <p class="paper-foot">排版示意 · 不是论文的实际翻译结果</p>
+        </div>
+      </div>
+      <div class="preview-footer"><span id="preview-note">A4 排版 · 浅灰底译文 · 保留公式与图表</span><button id="show-sample" class="text-button" type="button" hidden>查看参考样例</button></div>
+    </section>
+  </div>
+  <footer class="page-footer"><span>PaperFlow Local · <a href="https://github.com/zr-1-1/pdf_parallel_trans" target="_blank" rel="noopener noreferrer">源码与许可证</a></span><span>上传、翻译、对照、导出。</span></footer>
+</main>
+</body>
+</html>

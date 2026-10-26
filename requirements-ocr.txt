@@ -1,0 +1,6 @@
+-c constraints.txt
+# 可选本地 OCR 依赖。安装后使用 RapidOCR 包内模型，不自动下载额外版面模型。
+rapidocr-onnxruntime==1.4.4
+onnxruntime>=1.20,<2
+numpy>=1.26,<3
+opencv-python>=4.8,<6
